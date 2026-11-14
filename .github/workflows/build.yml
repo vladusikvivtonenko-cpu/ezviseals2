@@ -1,7 +1,6 @@
 name: build
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -9,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Unzip project
+        run: for z in *.zip; do unzip -oq "$z"; done
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -16,8 +17,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.12"
-      - run: gradle build --stacktrace
+      - name: Build
+        working-directory: ezvisuals
+        run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: ezvisuals-jar
-          path: build/libs/*.jar
+          path: ezvisuals/build/libs/*.jar
